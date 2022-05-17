@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useForm } from "react-hook-form";
+import React, {useState} from 'react';
+import {useForm} from "react-hook-form";
 import './App.css';
 import FruitCounter from './components/FruitCounter';
 import Button from "./components/Button";
@@ -7,7 +7,13 @@ import TextInput from "./components/TextInput";
 
 
 function App() {
-    const { handleSubmit, register } = useForm();
+    const {handleSubmit, register, formState: {errors}, watch } = useForm( {
+        mode: "onChange",
+        defaultValues: {
+            comment: "Haai!"
+        }
+    });
+
     const initialState = {
         strawberry: 0,
         apple: 0,
@@ -15,6 +21,8 @@ function App() {
         kiwi: 0
     }
     const [count, setCount] = useState(initialState);
+
+    const selectedReferrer = watch("delivery-frequency");
 
     function decrementCount(event) {
         const name = event.target.name;
@@ -40,6 +48,8 @@ function App() {
         console.log(count)
         console.log(data)
     }
+
+    console.log("ERRORS", errors);
 
     return (
         <main>
@@ -132,6 +142,10 @@ function App() {
                     <option value="monthly">Iedere maand</option>
                 </select>
 
+                {selectedReferrer === "monthly" &&
+                    <label htmlFor="check"><input type="checkbox" id="check"/>Conditionele check</label>
+                }
+
                 <div>
                     <label htmlFor="day">
                         <input
@@ -161,9 +175,19 @@ function App() {
                 <textarea
                     id="comment"
                     name="comment"
-                    {...register("comment")}
+                    {...register("comment", {
+                        minLength: {
+                            value: 3,
+                            message: "te kort"
+                        },
+                        maxLength: {
+                            value: 6,
+                            message: "te lang"
+                        },
+                    })}
                 >
-                    </textarea>
+                </textarea>
+                {errors.comment && <span>{errors.comment.message}</span>}
 
                 <label htmlFor="accept-terms">
                     <input

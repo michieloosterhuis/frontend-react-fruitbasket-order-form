@@ -6,7 +6,6 @@ function TextInput({ label, id, name, type, register}) {
             {label}
             <input
                 id={id}
-                name={name}
                 type={type}
                 {...register(name)}
             />
